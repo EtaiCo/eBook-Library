@@ -1,0 +1,110 @@
+﻿:root {
+    --primary-color: #3498db;
+    --secondary-color: #2ecc71;
+    --background-color: #f4f6f7;
+    --text-color: #2c3e50;
+    --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+.hero-section {
+    text-align: center;
+    padding: 4rem 0;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+}
+
+    .hero-section h1 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        font-weight: bold;
+    }
+
+.featured-books {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    padding: 3rem 0;
+    flex-wrap: wrap;
+}
+
+.book-card {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: var(--card-shadow);
+    width: 250px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+    .book-card:hover {
+        transform: scale(1.05);
+    }
+
+    .book-card img {
+        max-width: 200px;
+        height: 300px;
+        object-fit: cover;
+        border-radius: 5px;
+        margin-bottom: 1rem;
+    }
+
+    .book-card h3 {
+        margin: 0.5rem 0;
+        color: var(--text-color);
+    }
+
+    .book-card p {
+        color: #7f8c8d;
+        font-size: 0.9rem;
+    }
+
+.reviews-section {
+    background-color: white;
+    padding: 3rem 0;
+    text-align: center;
+}
+
+.reviews-container {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.review-card {
+    background-color: var(--background-color);
+    border-radius: 10px;
+    box-shadow: var(--card-shadow);
+    width: 300px;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+    .review-card blockquote {
+        font-style: italic;
+        margin-bottom: 1rem;
+    }
+
+    .review-card .reviewer {
+        font-weight: bold;
+        color: var(--primary-color);
+    }
+
+@media (max-width: 768px) {
+    .hero-section h1 {
+        font-size: 2rem;
+    }
+
+    .book-card, .review-card {
+        width: 90%;
+        margin: 1rem auto;
+    }
+}

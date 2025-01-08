@@ -1,0 +1,134 @@
+﻿<!DOCTYPE html>
+@model LabCommunictionProj.Models.ViewModel.UserAndBooksViewModel
+@inject IHttpContextAccessor HttpContextAccessor
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design 2 - Minimal Cards</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f3f4f6;
+        }
+
+        .book-card {
+            border: none;
+            transition: transform 0.2s;
+        }
+
+            .book-card:hover {
+                transform: translateY(-5px);
+            }
+
+        .card-img-top {
+            height: 220px;
+            object-fit: cover;
+        }
+
+        .tab-content {
+            background: white;
+            border-radius: 0 0 16px 16px;
+            padding: 2rem;
+        }
+
+        .nav-tabs {
+            border: none;
+        }
+
+            .nav-tabs .nav-link {
+                border: none;
+                color: #6c757d;
+                padding: 1rem 2rem;
+                font-weight: 500;
+            }
+
+                .nav-tabs .nav-link.active {
+                    background: white;
+                    color: #0d6efd;
+                    border-radius: 16px 16px 0 0;
+                }
+    </style>
+</head>
+<body>
+    <div class="container py-5">
+        <h1 class="h3 mb-4">Welcome, @HttpContextAccessor.HttpContext.Session.GetString("FirstName")</h1>
+
+        <ul class="nav nav-tabs" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" data-bs-toggle="tab" href="#purchased">Purchased Books</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#borrowed">Borrowed Books</a>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <div id="purchased" class="tab-pane fade show active">
+                <div class="row g-4">
+                    @if (Model.purchasedBooks == null || !Model.purchasedBooks.Any())
+                    {
+                        <div class="col-12 text-center">
+                            <p class="text-muted">No purchased books yet</p>
+                        </div>
+                    }
+                    else
+                    {
+                        @foreach (var book in Model.purchasedBooks)
+                        {
+                            <div class="col-md-3">
+                                <div class="card book-card h-100">
+                                    <img src="@book.Cover" class="card-img-top" alt="@book.Title"
+                                         onerror="this.onerror=null;this.src='/images/default-cover.jpg';">
+                                    <div class="card-body">
+                                        <h6 class="card-title">@book.Title</h6>
+                                        <small class="text-muted">@book.Author</small>
+                                    </div>
+                                    <div class="card-footer bg-transparent border-0">
+                                        <a href="@Url.Action("DownloadBookPdf", "User", new { bookTitle = book.Title })"
+                                           class="btn btn-primary btn-sm">Download PDF</a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            <div id="borrowed" class="tab-pane fade">
+                <div class="row g-4">
+                    @if (Model.borrowedBooks == null || !Model.borrowedBooks.Any())
+                    {
+                        <div class="col-12 text-center">
+                            <p class="text-muted">No borrowed books yet</p>
+                        </div>
+                    }
+                    else
+                    {
+                        @foreach (var book in Model.borrowedBooks)
+                        {
+                            <div class="col-md-3">
+                                <div class="card book-card h-100">
+                                    <img src="@book.Cover" class="card-img-top" alt="@book.Title"
+                                         onerror="this.onerror=null;this.src='/images/default-cover.jpg';">
+                                    <div class="card-body">
+                                        <h6 class="card-title">@book.Title</h6>
+                                        <small class="text-muted">@book.Author</small>
+                                    </div>
+                                    <div class="card-footer bg-transparent border-0">
+                                        <a href="@Url.Action("DownloadBookPdf", "User", new { bookTitle = book.Title })"
+                                           class="btn btn-primary btn-sm">Download PDF</a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

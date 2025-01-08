@@ -1,0 +1,108 @@
+﻿@model List<BookModel>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ebook Library</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .carousel-control-prev, .carousel-control-next {
+            width: 5%;
+            background-color: rgba(0,0,0,0.2);
+        }
+
+        .book-card-img {
+            height: 300px;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-primary text-white py-5 text-center">
+        <div class="container">
+            <h1 class="display-4">Welcome to Our Ebook Library</h1>
+            <p class="lead">Discover, Read, Explore</p>
+        </div>
+    </div>
+
+    <div class="container my-5">
+        <div id="bookCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                @{
+                    var itemsPerSlide = 3;
+                    var slideCount = (int)Math.Ceiling((double)Model.Count / itemsPerSlide);
+
+                    for (int i = 0; i < slideCount; i++)
+                    {
+                        <div class="carousel-item @(i == 0 ? "active" : "")">
+                            <div class="row g-4">
+                                @{
+                                    var booksInSlide = Model.Skip(i * itemsPerSlide).Take(itemsPerSlide);
+                                    foreach (var book in booksInSlide)
+                                    {
+                                        <div class="col-4">
+                                            <div class="card h-100">
+                                                <img src="@book.Cover" class="card-img-top book-card-img" alt="@book.Title">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">@book.Title</h5>
+                                                    <p class="card-text">@book.Author</p>
+                                                    <p class="card-text"><small class="text-muted">Genre: @book.Genre</small></p>
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <span class="text-muted">@(book.IsForSale.Trim().ToLower() == "yes" ? $"Buy: ${book.BuyPrice}" : "")</span>
+                                                        <span class="text-muted">Borrow: @book.BorrowPrice.ToString("C")</span>
+                                                  </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#bookCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#bookCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="container mb-5">
+        <h2 class="text-center mb-4">What Our Readers Say</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <blockquote class="card-text">"Amazing collection of books!"</blockquote>
+                        <footer class="blockquote-footer">Jane Doe</footer>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <blockquote class="card-text">"Great user experience and interface."</blockquote>
+                        <footer class="blockquote-footer">John Smith</footer>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <blockquote class="card-text">"Fantastic selection of ebooks."</blockquote>
+                        <footer class="blockquote-footer">Emily Johnson</footer>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

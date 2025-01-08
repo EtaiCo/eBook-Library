@@ -1,0 +1,129 @@
+﻿@model LabCommunictionProj.Models.BookModel
+
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+<style>
+    body {
+        background-color: aliceblue;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        height: 120vh;
+    }
+
+    .blur-box {
+        background-color: white;
+        backdrop-filter: blur(10px);
+        border-color: black;
+        border-radius: 10px;
+        padding: 30px;
+        box-shadow: 6px 4px 6px rgba(0, 0, 0, 0.1);
+        width: 500px;
+        height: auto;
+        margin: 40px auto;
+    }
+
+    .form-control {
+        margin-bottom:-10px;
+    }
+
+    .validation-message {
+        color: red;
+        font-size: 0.85em;
+        margin-top: -12px;
+        margin-bottom: 10px;
+    }
+
+    .form-group label {
+        font-size: 0.9em;
+        color: #666;
+        margin-bottom: -5px;
+    }
+</style>
+
+<div class="d-flex justify-content-center align-items-center">
+    <div class="blur-box">
+        <h2 class="text-center mb-4">Add New Book</h2>
+        <form action="ViewBook" method="post">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Title</label>
+                    @Html.ValidationMessageFor(x => x.Title, null, new { @class = "validation-message" })
+                    <input name="Title" class="form-control" placeholder="Enter title" value="@Model.Title" />
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Author</label>
+                    @Html.ValidationMessageFor(x => x.Author, null, new { @class = "validation-message" })
+                    <input name="Author" class="form-control" placeholder="Enter author" value="@Model.Author" />
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Publisher</label>
+                    @Html.ValidationMessageFor(x => x.Publisher, null, new { @class = "validation-message" })
+                    <input name="Publisher" class="form-control" placeholder="Enter publisher" value="@Model.Publisher" />
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Year</label>
+                    @Html.ValidationMessageFor(x => x.Year, null, new { @class = "validation-message" })
+                    <input name="Year" class="form-control" placeholder="Enter year" value="@Model.Year" />
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Buy Price</label>
+                    @Html.ValidationMessageFor(x => x.BuyPrice, null, new { @class = "validation-message" })
+                    <input name="BuyPrice" class="form-control" placeholder="Enter buy price" value="@Model.BuyPrice" />
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Borrow Price</label>
+                    @Html.ValidationMessageFor(x => x.BorrowPrice, null, new { @class = "validation-message" })
+                    <input name="BorrowPrice" class="form-control" placeholder="Enter borrow price" value="@Model.BorrowPrice" />
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Number of Copies (Max: 3)</label>
+                    @Html.ValidationMessageFor(x => x.CopiesNum, null, new { @class = "validation-message" })
+                    <input name="CopiesNum" class="form-control" placeholder="Enter number of copies" value="@Model.CopiesNum" />
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Age Limit</label>
+                    @Html.ValidationMessageFor(x => x.AgeLimit, null, new { @class = "validation-message" })
+                    <input name="AgeLimit" class="form-control" placeholder="Enter age limit" value="@Model.AgeLimit" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Genre</label>
+                @Html.ValidationMessageFor(x => x.Genre, null, new { @class = "validation-message" })
+                <input name="Genre" class="form-control" placeholder="Enter genre" value="@Model.Genre" />
+            </div>
+
+            <div class="form-group">
+                <label>Cover URL</label>
+                @Html.ValidationMessageFor(x => x.Cover, null, new { @class = "validation-message" })
+                <input name="Cover" class="form-control" placeholder="Enter cover URL" value="@Model.Cover" />
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>ISBN</label>
+                    @Html.ValidationMessageFor(x => x.Isbn, null, new { @class = "validation-message" })
+                    <input name="Isbn" class="form-control" placeholder="Enter ISBN" value="@Model.Isbn" />
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Is For Sale</label>
+                    @Html.ValidationMessageFor(x => x.IsForSale, null, new { @class = "validation-message" })
+                    <input name="IsForSale" class="form-control" placeholder="Yes/No" value="@Model.IsForSale" />
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block mt-4">Add Book</button>
+        </form>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

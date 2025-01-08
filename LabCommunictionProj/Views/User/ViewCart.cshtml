@@ -1,0 +1,50 @@
+﻿@model LabCommunictionProj.Models.ViewModel.BooksViewModel
+
+@{
+    ViewBag.Title = "Your Cart";
+}
+
+<div class="container mt-4">
+    <h1 class="mb-4">Your Cart</h1>
+
+    @if (Model.Books != null && Model.Books.Any())
+    {
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Publisher</th>
+                    <th>Year</th>
+                    <th>Type Of Purchase</th>
+                    <th>Price</th>                    
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var book in Model.Books)
+                {
+                    <tr>
+                        <td>@book.Title</td>
+                        <td>@book.Author</td>
+                        <td>@book.Publisher</td>
+                        <td>@book.Year</td>    
+                        <td>@book.Type</td>
+                        <td>@book.Price</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        
+        <div class="text-end mt-4">
+            <a href="@Url.Action("Payment", "User")" class="btn btn-success btn-lg">
+                Proceed to Payment
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            Your cart is empty. Browse our <a href="@Url.Action("SearchBooks", "Book")">Catalog</a>.
+        </div>
+    }
+</div>

@@ -1,0 +1,57 @@
+﻿@model LabCommunictionProj.Models.ViewModel.UserViewModel
+@inject IHttpContextAccessor HttpContextAccessor
+
+<h2>Search Users</h2>
+
+<form asp-action="SearchUsers" method="post">
+    <div class="form-group">
+        <label for="searchUsers">Search Users:</label>
+        <input type="text" id="searchUsers" name="searchUsers" class="form-control" placeholder="Enter first or last name" value="@Model.SearchTerm" />
+    </div>
+    <button type="submit" class="btn btn-primary">Search User</button>
+</form>
+
+<div class="mt-4">
+    @if (Model.Users == null || Model.Users.Count == 0)
+    {
+        <p class="alert alert-info">No users found. Try a different search term.</p>
+    }
+    else
+    {
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Password</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model.Users)
+                {
+                    <tr>
+                        <td>@user.Id</td>
+                        <td>@user.FirstName</td>
+                        <td>@user.LastName</td>
+                        <td>@user.Mail</td>
+                        <td>@user.PhoneNumber</td>
+                        <td>@user.Password</td>
+                        <td>
+                            @if (HttpContextAccessor.HttpContext.Session.GetString("IsAdmin") == "yes")
+                            {
+                                <form asp-controller="User" asp-action="RemoveUser" method="post" style="display: inline;">
+                                    <input type="hidden" name="id" value="@user.Id" />
+                                    <button type="submit" class="btn btn-danger">Remove</button>
+                                </form>                               
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

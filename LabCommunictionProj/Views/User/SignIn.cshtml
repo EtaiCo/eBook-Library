@@ -1,0 +1,76 @@
+﻿@model LabCommunictionProj.Models.SignInViewModel
+
+<!-- Bootstrap CSS -->
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+
+<style>
+    body {
+        background-color: aliceblue;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        height: 120vh;
+    }
+
+    .blur-box {
+        background-color: white;
+        backdrop-filter: blur(10px);
+        border-color: black;
+        border-radius: 10px;
+        padding: 30px;
+        box-shadow: 6px 4px 6px rgba(0, 0, 0, 0.1);
+        width: 400px;
+        height: 600px;
+        margin-left: 350px;
+        margin-Top: 55px;
+    }
+
+    .form-control {
+        margin-bottom: 30px;
+    }
+
+    .validation-message {
+        color: red;
+        font-size: 0.85em;
+        margin-top: -5px;
+        margin-bottom: 10px;
+    }
+
+    .form-text {
+        font-size: 0.8em;
+    }
+</style>
+
+<div class="blur-box">
+    <h2 class="text-center mb-4">Sign In</h2>
+
+    <!-- Display error message if exists -->
+    @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+    {
+        <div class="alert alert-danger">
+            @ViewBag.ErrorMessage
+        </div>
+    }
+
+    <form asp-action="SignIn" asp-controller="User" method="post">
+        <!-- Email -->
+        <div class="form-group">
+            <label for="Mail">Email</label>
+            <input asp-for="Mail" class="form-control" id="Mail" placeholder="Enter your email" />
+            @Html.ValidationMessageFor(m => m.Mail, null, new { @class = "validation-message" })
+        </div>
+
+        <!-- Password -->
+        <div class="form-group">
+            <label for="Password">Password</label>
+            <input asp-for="Password" type="password" class="form-control" id="Password" placeholder="Enter your password" />
+            @Html.ValidationMessageFor(m => m.Password, null, new { @class = "validation-message" })
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary btn-block mt-3">Sign In</button>
+    </form>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

@@ -1,0 +1,91 @@
+﻿@model LabCommunictionProj.Models.ViewModel.BooksViewModel
+@inject IHttpContextAccessor HttpContextAccessor
+
+<h2>Search Books</h2>
+
+<form asp-action="SearchBooks" method="post">
+    <div class="form-group">
+        <label for="searchBooks"></label>
+        <input type="text" id="searchBooks" name="searchBooks" class="form-control" placeholder="Enter book title" value="@Model.SearchTerm" />
+    </div>
+    <button type="submit" class="btn btn-primary">Search Book</button>
+</form>
+
+<div class="mt-4">
+    @if (Model.Books == null || Model.Books.Count == 0)
+    {
+        <p class="alert alert-info">No books found. Try a different search term.</p>
+    }
+    else
+    {
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Publisher</th>
+                    <th>Year</th>
+                    <th>Borrow Price</th>
+                    <th>Buy Price</th>
+                    <th>Number Of Copies</th>
+                    <th>Age Limit</th>
+                    <th>Genre</th>
+                    <th>Cover</th>
+                    <th>Isbn</th>
+                    <th>Is For Sale</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var book in Model.Books)
+                {
+                    <tr>
+                        <td>@book.Title</td>
+                        <td>@book.Author</td>
+                        <td>@book.Publisher</td>
+                        <td>@book.Year</td>
+                        <td>@book.BorrowPrice</td>
+                        <td>@book.BuyPrice</td>
+                        <td>@book.CopiesNum</td>
+                        <td>@book.AgeLimit</td>
+                        <td>@book.Genre</td>
+                        <td><img src="@book.Cover" alt="@book.Title" style="width: 50px; height: auto;" /></td>
+                        <td>@book.Isbn</td>
+                        <td>@book.IsForSale</td>
+                        <td>
+                            @if (HttpContextAccessor.HttpContext.Session.GetString("IsAdmin") == "yes")
+                            {
+                                <form asp-controller="Book" asp-action="RemoveBook" method="post" style="display: inline;">
+                                    <input type="hidden" name="isbn" value="@book.Isbn" />
+                                    <button type="submit" class="btn btn-danger">Remove</button>
+                                </form>
+                            }
+                            else
+                            {
+                                @if (book.CopiesNum > 0)
+                                {
+                                    <form asp-controller="User" asp-action="AddToCart" method="post" style="display: inline;">
+                                        <input type="hidden" name="isbn" value="@book.Isbn" />
+                                        <input type="hidden" name="price" value="@book.BorrowPrice" />
+                                        <input type="hidden" name="type" value="Borrow" />
+                                        <button type="submit" class="btn btn-warning">Borrow</button>
+                                    </form>
+                                }
+
+                                @if (!string.IsNullOrEmpty(book.IsForSale) && book.IsForSale.Trim().ToLower() == "yes")
+                                {
+                                    <form asp-controller="User" asp-action="AddToCart" method="post" style="display: inline;">
+                                        <input type="hidden" name="isbn" value="@book.Isbn" />
+                                        <input type="hidden" name="price" value="@book.BuyPrice" />
+                                        <input type="hidden" name="type" value="Purchase" />
+                                        <button type="submit" class="btn btn-success">Purchase</button>
+                                    </form>
+                                }
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
