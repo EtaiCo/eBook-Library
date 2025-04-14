@@ -28,7 +28,9 @@ namespace LabCommunictionProj.Models
         [RegularExpression("^[0-9]{9}$", ErrorMessage = "Id number must be 9 numbers")]
         public string Id { get; set; }
 
-        public string IsAdmin { get; set; } = "no";
+        [Required(ErrorMessage = "Is Admin is required")]
+        [RegularExpression("^(yes|no)$", ErrorMessage = "Option must be either 'yes' or 'no'")]
+        public string IsAdmin { get; set; }
 
     }
 }

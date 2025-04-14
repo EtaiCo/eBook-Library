@@ -79,6 +79,9 @@
             @Html.ValidationMessageFor(x => x.Id, null, new { @class = "validation-message" })
             <input name="Id" class="form-control" placeholder="ID" value="@Model.Id" />
 
+            @Html.ValidationMessageFor(x => x.IsAdmin, null, new { @class = "validation-message" })
+            <input name="IsAdmin" class="form-control" placeholder="Is Admin? yes/no" value="@Model.IsAdmin" />
+
             <button type="submit" class="btn btn-primary btn-block mt-3">Add User</button>
         </form>
     </div>

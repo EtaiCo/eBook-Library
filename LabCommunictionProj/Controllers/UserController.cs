@@ -9,6 +9,8 @@ using iText.Layout;
 using iText.Layout.Element;
 using iText.IO.Font.Constants;
 using iText.Kernel.Font;
+using iText.Kernel.XMP.Impl;
+using LabCommunictionProj.Utils;
 
 namespace LabCommunictionProj.Controllers
 {
@@ -60,12 +62,13 @@ namespace LabCommunictionProj.Controllers
                 string sqlQuery = "INSERT INTO tblUser VALUES (@id, @firstName, @lastName, @phone, @mail, @password, @isAdmin)";
                 using (SqlCommand command = new SqlCommand(sqlQuery, connection))
                 {
+                    string hashedPassword = Utils.PasswordHasher.Hash(user.Password);
                     command.Parameters.AddWithValue("@id", user.Id);
                     command.Parameters.AddWithValue("@firstName", user.FirstName);
                     command.Parameters.AddWithValue("@lastName", user.LastName);
                     command.Parameters.AddWithValue("@phone", user.PhoneNumber);
                     command.Parameters.AddWithValue("@mail", user.Mail);
-                    command.Parameters.AddWithValue("@password", user.Password);
+                    command.Parameters.AddWithValue("@password", hashedPassword);
                     command.Parameters.AddWithValue("@isAdmin", user.IsAdmin);
 
                     int rowsAffected = command.ExecuteNonQuery();
@@ -90,11 +93,12 @@ namespace LabCommunictionProj.Controllers
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
                     connection.Open();
+                    string hashedPassword = Utils.PasswordHasher.Hash(model.Password);
                     string sqlQuery = "SELECT * FROM tblUser WHERE mail = @mail AND password = @password";
                     using (SqlCommand command = new SqlCommand(sqlQuery, connection))
                     {
                         command.Parameters.AddWithValue("@mail", model.Mail);
-                        command.Parameters.AddWithValue("@password", model.Password);
+                        command.Parameters.AddWithValue("@password",hashedPassword);
 
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
@@ -637,6 +641,90 @@ namespace LabCommunictionProj.Controllers
                 TempData["PaymentMessage"] = $"An unexpected error occurred: {ex.Message}";
             }           
         }
+
+        [HttpGet]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (string.IsNullOrEmpty(model.Email))
+            {
+                ModelState.AddModelError("Email", "Email is required.");
+                return View(model);
+            }
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                string checkEmailQuery = "SELECT * FROM tblUser WHERE mail = @mail";
+                using (SqlCommand command = new SqlCommand(checkEmailQuery, connection))
+                {
+                    command.Parameters.AddWithValue("@mail", model.Email);
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.HasRows)
+                        {
+                            // Found user, redirect to reset password page
+                            return RedirectToAction("ResetPassword", new { email = model.Email });
+                        }
+                        else
+                        {
+                            ViewBag.Message = "No user found with that email.";
+                            return View(model);
+                        }
+                    }
+                }
+            }
+        }
+        [HttpGet]
+        public IActionResult ResetPassword(string email)
+        {
+            return View(new ResetPasswordViewModel { Email = email });
+        }
+
+        [HttpPost]
+        public IActionResult ResetPassword(ResetPasswordViewModel model)
+        {
+            if (string.IsNullOrEmpty(model.NewPassword))
+            {
+                ModelState.AddModelError("NewPassword", "Password is required.");
+                return View(model);
+            }
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+            string hashedPassword = Utils.PasswordHasher.Hash(model.NewPassword);
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                string updateQuery = "UPDATE tblUser SET password = @password WHERE mail = @mail";
+                using (SqlCommand command = new SqlCommand(updateQuery, connection))
+                {
+                    command.Parameters.AddWithValue("@password", hashedPassword);
+                    command.Parameters.AddWithValue("@mail", model.Email);
+
+                    int rowsAffected = command.ExecuteNonQuery();
+                    if (rowsAffected > 0)
+                    {
+                        ViewBag.Message = "Password has been reset successfully.";
+                        return RedirectToAction("SignIn");
+                    }
+                    else
+                    {
+                        ViewBag.Message = "An error occurred. Please try again.";
+                        return View(model);
+                    }
+                }
+            }
+        }
+
 
     }
 }
