@@ -11,14 +11,14 @@
     }
 
     .blur-box {
-        background-color:white;
+        background-color: white;
         backdrop-filter: blur(10px);
-        border-color:black ;
+        border-color: black;
         border-radius: 10px;
         padding: 30px;
         box-shadow: 6px 4px 6px rgba(0, 0, 0, 0.1);
-        width: 400px; 
-        height: 600px;
+        width: 450px;
+        min-height: 700px;
         margin-Top: -60px;
     }
 
@@ -29,8 +29,8 @@
     .validation-message {
         color: red;
         font-size: 0.85em;
-        margin-top: -5px; 
-        margin-bottom: 10px; 
+        margin-top: -5px;
+        margin-bottom: 10px;
     }
 
     .form-text {
@@ -58,7 +58,7 @@
                     <input name="LastName" class="form-control" placeholder="Last Name" value="@Model.LastName" />
                 </div>
             </div>
-         
+
             <div class="form-row">
                 <div class="col">
                     @Html.ValidationMessageFor(x => x.PhoneNumber, null, new { @class = "validation-message" })
@@ -71,13 +71,27 @@
             </div>
 
             @Html.ValidationMessageFor(x => x.Password, null, new { @class = "validation-message" })
-            <input type="password" name="password" class="form-control" placeholder="Password" value="@Model.Password" />
+            <input type="password" name="Password" class="form-control" placeholder="Password" value="@Model.Password" />
             <small class="form-text text-muted">
                 Must include 8+ chars, an uppercase, a number, and a special character.
             </small>
 
             @Html.ValidationMessageFor(x => x.Id, null, new { @class = "validation-message" })
             <input name="Id" class="form-control" placeholder="ID" value="@Model.Id" />
+
+            @Html.ValidationMessageFor(x => x.CreditCardNumber, null, new { @class = "validation-message" })
+            <input name="CreditCardNumber" class="form-control" placeholder="Credit Card Number" value="@Model.CreditCardNumber" />
+
+            <div class="form-row">
+                <div class="col">
+                    @Html.ValidationMessageFor(x => x.CVC, null, new { @class = "validation-message" })
+                    <input name="CVC" class="form-control" placeholder="CVC" value="@Model.CVC" />
+                </div>
+                <div class="col">
+                    @Html.ValidationMessageFor(x => x.ValidDate, null, new { @class = "validation-message" })
+                    <input name="ValidDate" class="form-control" placeholder="MM/YY" value="@Model.ValidDate" />
+                </div>
+            </div>
 
             @Html.ValidationMessageFor(x => x.IsAdmin, null, new { @class = "validation-message" })
             <input name="IsAdmin" class="form-control" placeholder="Is Admin? yes/no" value="@Model.IsAdmin" />
@@ -88,4 +102,6 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation-unobtrusive@3.2.12/dist/jquery.validate.unobtrusive.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

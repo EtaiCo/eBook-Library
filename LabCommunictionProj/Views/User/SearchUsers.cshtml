@@ -26,7 +26,9 @@
                     <th>Last Name</th>
                     <th>Email</th>
                     <th>Phone</th>
-                    <th>Password</th>
+                    <th>Credit Card</th>
+                    <th>CVC</th>
+                    <th>Valid Date</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -37,9 +39,12 @@
                         <td>@user.Id</td>
                         <td>@user.FirstName</td>
                         <td>@user.LastName</td>
-                        <td>@user.Mail</td>
                         <td>@user.PhoneNumber</td>
-                        <td>@user.Password</td>
+                        <td>@user.Mail</td>
+                        <td>@user.CreditCardNumber</td>
+                        <td>@user.CVC</td>
+                        <td>@user.ValidDate</td>
+
                         <td>
                             @if (HttpContextAccessor.HttpContext.Session.GetString("IsAdmin") == "yes")
                             {

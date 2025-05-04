@@ -7,6 +7,10 @@ namespace LabCommunictionProj.Utils
     {
         public static string Hash(string password)
         {
+            if (string.IsNullOrEmpty(password))
+            {
+                return password;
+            }
             using (SHA256 sha256 = SHA256.Create())
             {
                 byte[] inputBytes = Encoding.UTF8.GetBytes(password);

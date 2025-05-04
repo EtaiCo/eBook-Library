@@ -28,9 +28,20 @@ namespace LabCommunictionProj.Models
         [RegularExpression("^[0-9]{9}$", ErrorMessage = "Id number must be 9 numbers")]
         public string Id { get; set; }
 
+        [Required(ErrorMessage = "Credit card number is required")]
+        [RegularExpression(@"^\d{12}$", ErrorMessage = "Credit card number must be 12 digits")]
+        public string CreditCardNumber { get; set; }
+
+        [Required(ErrorMessage = "CVC is required")]
+        [RegularExpression(@"^\d{3}$", ErrorMessage = "CVC must be 3 digits")]
+        public string CVC { get; set; }
+
+        [Required(ErrorMessage = "Valid date is required")]
+        [ValidExpirationDate(ErrorMessage = "Credit card expiration date is invalid or has already passed")]
+        public string ValidDate { get; set; }
+
         [Required(ErrorMessage = "Is Admin is required")]
         [RegularExpression("^(yes|no)$", ErrorMessage = "Option must be either 'yes' or 'no'")]
-        public string IsAdmin { get; set; }
-
+        public string IsAdmin { get; set; } = "no";
     }
 }

@@ -44,14 +44,14 @@
     <h2 class="text-center mb-4">Sign In</h2>
 
     <!-- Display error message if exists -->
-    @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+   @*  @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
     {
         <div class="alert alert-danger">
             @ViewBag.ErrorMessage
         </div>
-    }
+    } *@
 
-    <form asp-action="SignIn" asp-controller="User" method="post">
+   @*  <form asp-action="SignIn" asp-controller="User" method="post">
         <!-- Email -->
         <div class="form-group">
             <label for="Mail">Email</label>
@@ -71,7 +71,30 @@
         </div>
         <!-- Submit Button -->
         <button type="submit" class="btn btn-primary btn-block mt-3">Sign In</button>
+    </form> *@
+
+    <!------------------------------------------this is for sql injection-------------------------->
+    <form asp-action="SignIn" asp-controller="User" method="post">
+        <!-- Email -->
+        <div class="form-group">
+            <label for="Mail">Email</label>
+            <input type="text" name="Mail" class="form-control" id="Mail" placeholder="Enter your email" />
+        </div>
+
+        <!-- Password -->
+        <div class="form-group">
+            <label for="Password">Password</label>
+            <input type="text" name="Password" class="form-control" id="Password" placeholder="Enter your password" />
+        </div>
+        <!-- Forgot Password Link -->
+        <div class="form-group text-right">
+            <a href="/User/ForgotPassword" class="form-text text-muted">Forgot your password?</a>
+        </div>
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary btn-block mt-3">Sign In</button>
     </form>
+    <!------------------------------------------this is for sql injection-------------------------->
+
 </div>
 
 <!-- Bootstrap JS -->

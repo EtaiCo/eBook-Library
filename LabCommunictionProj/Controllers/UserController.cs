@@ -31,77 +31,152 @@ namespace LabCommunictionProj.Controllers
         }
         public IActionResult ViewUser(UserModel user)
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            if (ModelState.IsValid)
             {
-                connection.Open();
 
-                // Check if ID or email already exists
-                string checkQuery = "SELECT COUNT(*) FROM tblUser WHERE id = @id OR mail = @mail";
-                using (SqlCommand checkCommand = new SqlCommand(checkQuery, connection))
+                if (string.IsNullOrEmpty(user.IsAdmin))
                 {
-                    checkCommand.Parameters.AddWithValue("@id", user.Id);
-                    checkCommand.Parameters.AddWithValue("@mail", user.Mail);
-                    if (string.IsNullOrWhiteSpace(user.Id) || string.IsNullOrWhiteSpace(user.Mail))
-                    {                      
-                        return View("SignUp", user);
-                    }
-
-                    int existingCount = (int)checkCommand.ExecuteScalar();
-
-                    if (existingCount > 0)
-                    {
-                        // Store a flag in ModelState to indicate duplicate exists
-                        ModelState.AddModelError("DuplicateEntry", "The ID or email is already in use. Please enter different details.");
-
-                        // Return the same view with existing data and error
-                        return View("SignUp", user);
-                    }
+                    user.IsAdmin = "no";
                 }
-
-                // If no duplicates, proceed with inserting the user
-                string sqlQuery = "INSERT INTO tblUser VALUES (@id, @firstName, @lastName, @phone, @mail, @password, @isAdmin)";
-                using (SqlCommand command = new SqlCommand(sqlQuery, connection))
+                using (SqlConnection connection = new SqlConnection(connectionString))
                 {
-                    string hashedPassword = Utils.PasswordHasher.Hash(user.Password);
-                    command.Parameters.AddWithValue("@id", user.Id);
-                    command.Parameters.AddWithValue("@firstName", user.FirstName);
-                    command.Parameters.AddWithValue("@lastName", user.LastName);
-                    command.Parameters.AddWithValue("@phone", user.PhoneNumber);
-                    command.Parameters.AddWithValue("@mail", user.Mail);
-                    command.Parameters.AddWithValue("@password", hashedPassword);
-                    command.Parameters.AddWithValue("@isAdmin", user.IsAdmin);
+                    connection.Open();
 
-                    int rowsAffected = command.ExecuteNonQuery();
-
-                    if (rowsAffected > 0)
+                    // Check if ID or email already exists
+                    string checkQuery = "SELECT COUNT(*) FROM tblUser WHERE id = @id OR mail = @mail";
+                    using (SqlCommand checkCommand = new SqlCommand(checkQuery, connection))
                     {
-                        return RedirectToAction("SignIn");
+                        checkCommand.Parameters.AddWithValue("@id", user.Id);
+                        checkCommand.Parameters.AddWithValue("@mail", user.Mail);
+                        if (string.IsNullOrWhiteSpace(user.Id) || string.IsNullOrWhiteSpace(user.Mail))
+                        {
+                            return View("SignUp", user);
+                        }
+
+                        int existingCount = (int)checkCommand.ExecuteScalar();
+
+                        if (existingCount > 0)
+                        {
+                            // Store a flag in ModelState to indicate duplicate exists
+                            ModelState.AddModelError("DuplicateEntry", "The ID or email is already in use. Please enter different details.");
+
+                            // Return the same view with existing data and error
+                            return View("SignUp", user);
+                        }
                     }
-                    else
+
+                    // If no duplicates, proceed with inserting the user
+                    string sqlQuery = @"INSERT INTO tblUser (firstName, lastName, phone, mail, password, id, creditCardNumber, cvc, validDate, isAdmin) 
+                 VALUES (@firstName, @lastName, @phone, @mail, @password, @id, @creditCardNumber, @cvc, @validDate, @isAdmin)";
+                    using (SqlCommand command = new SqlCommand(sqlQuery, connection))
                     {
-                        ModelState.AddModelError("DatabaseError", "An error occurred while adding the user. Please try again.");
-                        return View("SignUp", user);
+                        string hashedPassword = Utils.PasswordHasher.Hash(user.Password);
+                        command.Parameters.AddWithValue("@id", user.Id);
+                        command.Parameters.AddWithValue("@firstName", user.FirstName);
+                        command.Parameters.AddWithValue("@lastName", user.LastName);
+                        command.Parameters.AddWithValue("@phone", user.PhoneNumber);
+                        command.Parameters.AddWithValue("@mail", user.Mail);
+                        command.Parameters.AddWithValue("@password", hashedPassword);
+                        command.Parameters.AddWithValue("@isAdmin", user.IsAdmin);
+                        command.Parameters.AddWithValue("@creditCardNumber", user.CreditCardNumber);
+                        command.Parameters.AddWithValue("@cvc", user.CVC);
+                        command.Parameters.AddWithValue("@validDate", user.ValidDate);
+
+
+                        int rowsAffected = command.ExecuteNonQuery();
+
+                        if (rowsAffected > 0)
+                        {
+                            return RedirectToAction("SignIn");
+                        }
+                        else
+                        {
+                            ModelState.AddModelError("DatabaseError", "An error occurred while adding the user. Please try again.");
+                            return View("SignUp", user);
+                        }
                     }
                 }
             }
+            else
+            {
+                // If model state is invalid, return the same view with validation errors
+                return View("SignUp", user);
+            }
         }
+
+        /* public IActionResult SignIn(SignInViewModel model)
+         {
+             if (ModelState.IsValid)
+             {
+                 using (SqlConnection connection = new SqlConnection(connectionString))
+                 {
+                     connection.Open();
+                     string hashedPassword = Utils.PasswordHasher.Hash(model.Password);
+                     string sqlQuery = "SELECT * FROM tblUser WHERE mail = @mail AND password = @password";
+                     using (SqlCommand command = new SqlCommand(sqlQuery, connection))
+                     {
+                         command.Parameters.AddWithValue("@mail", model.Mail);
+                         command.Parameters.AddWithValue("@password",hashedPassword);
+
+                         using (SqlDataReader reader = command.ExecuteReader())
+                         {
+                             if (reader.HasRows)
+                             {
+                                 reader.Read();
+                                 var user = new UserModel
+                                 {
+                                     Id = reader["Id"].ToString(),
+                                     FirstName = reader["FirstName"].ToString(),
+                                     LastName = reader["LastName"].ToString(),
+                                     PhoneNumber = reader["Phone"].ToString(),
+                                     Mail = reader["Mail"].ToString(),
+                                     Password = reader["Password"].ToString(),
+                                     IsAdmin = reader["IsAdmin"].ToString()
+                                 };                               
+                                 HttpContext.Session.SetString("UserId", user.Id);
+                                 HttpContext.Session.SetString("FirstName", user.FirstName);
+                                 HttpContext.Session.SetString("LastName", user.LastName);
+                                 HttpContext.Session.SetString("PhoneNumber", user.PhoneNumber);
+                                 HttpContext.Session.SetString("Mail", user.Mail);
+                                 HttpContext.Session.SetString("Password", user.Password);
+                                 HttpContext.Session.SetString("IsAdmin", user.IsAdmin);
+                                 if(user.IsAdmin == "yes")
+                                 {
+                                     return RedirectToAction("Index","Home");
+                                 }
+                                 return RedirectToAction("UserConnection", user);
+                             }
+                             else
+                             {
+                                 ViewBag.ErrorMessage = "Invalid Email or Password!";
+                                 return View(model);
+                             }
+                         }
+                     }
+                 }
+             }
+
+             return View(model);
+         }*/
+
+    /*------------------------------------------this is for sql injection-------------------------->*/
 
         public IActionResult SignIn(SignInViewModel model)
         {
-            if (ModelState.IsValid)
-            {
+           
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
                     connection.Open();
                     string hashedPassword = Utils.PasswordHasher.Hash(model.Password);
-                    string sqlQuery = "SELECT * FROM tblUser WHERE mail = @mail AND password = @password";
+
+                    string sqlQuery = $"SELECT * FROM tblUser WHERE mail = '{model.Mail}' AND password = '{hashedPassword}'";
+
                     using (SqlCommand command = new SqlCommand(sqlQuery, connection))
                     {
-                        command.Parameters.AddWithValue("@mail", model.Mail);
-                        command.Parameters.AddWithValue("@password",hashedPassword);
-
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
+                            command.Parameters.AddWithValue("@mail", model.Mail);
+                            command.Parameters.AddWithValue("@password", hashedPassword);
                             if (reader.HasRows)
                             {
                                 reader.Read();
@@ -114,7 +189,8 @@ namespace LabCommunictionProj.Controllers
                                     Mail = reader["Mail"].ToString(),
                                     Password = reader["Password"].ToString(),
                                     IsAdmin = reader["IsAdmin"].ToString()
-                                };                               
+                                };
+
                                 HttpContext.Session.SetString("UserId", user.Id);
                                 HttpContext.Session.SetString("FirstName", user.FirstName);
                                 HttpContext.Session.SetString("LastName", user.LastName);
@@ -122,9 +198,10 @@ namespace LabCommunictionProj.Controllers
                                 HttpContext.Session.SetString("Mail", user.Mail);
                                 HttpContext.Session.SetString("Password", user.Password);
                                 HttpContext.Session.SetString("IsAdmin", user.IsAdmin);
-                                if(user.IsAdmin == "yes")
+
+                                if (user.IsAdmin == "yes")
                                 {
-                                    return RedirectToAction("Index","Home");
+                                    return RedirectToAction("Index", "Home");
                                 }
                                 return RedirectToAction("UserConnection", user);
                             }
@@ -136,10 +213,9 @@ namespace LabCommunictionProj.Controllers
                         }
                     }
                 }
-            }
-
-            return View(model);
+            
         }
+        /*------------------------------------------this is for sql injection-------------------------->*/
 
         public IActionResult SearchUsers(string searchUsers)
         {
@@ -177,7 +253,9 @@ namespace LabCommunictionProj.Controllers
                                 LastName = reader.GetString(2),
                                 PhoneNumber = reader.GetString(3),
                                 Mail = reader.GetString(4),
-                                Password = reader.GetString(5)
+                                CreditCardNumber = reader.GetString(7),
+                                CVC = reader.GetString(8),
+                                ValidDate = reader.GetString(9)
                             };
                             users.Users.Add(user);
                         }
