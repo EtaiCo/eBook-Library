@@ -159,62 +159,67 @@ namespace LabCommunictionProj.Controllers
              return View(model);
          }*/
 
-    /*------------------------------------------this is for sql injection-------------------------->*/
+        /*------------------------------------------this is for sql injection-------------------------->*/
 
         public IActionResult SignIn(SignInViewModel model)
         {
-           
-                using (SqlConnection connection = new SqlConnection(connectionString))
+            bool isPotentialSqlInjection = model.Password != null && model.Password.Contains("' OR 1=1--");
+            string hashedPassword;
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                if (isPotentialSqlInjection)
                 {
-                    connection.Open();
-                    string hashedPassword = Utils.PasswordHasher.Hash(model.Password);
+                    hashedPassword = model.Password;
+                }
+                else hashedPassword = Utils.PasswordHasher.Hash(model.Password);
 
-                    string sqlQuery = $"SELECT * FROM tblUser WHERE mail = '{model.Mail}' AND password = '{hashedPassword}'";
+                string sqlQuery = $"SELECT * FROM tblUser WHERE mail = '{model.Mail}' AND password = '{hashedPassword}'";
 
-                    using (SqlCommand command = new SqlCommand(sqlQuery, connection))
+                using (SqlCommand command = new SqlCommand(sqlQuery, connection))
+                {
+                    using (SqlDataReader reader = command.ExecuteReader())
                     {
-                        using (SqlDataReader reader = command.ExecuteReader())
+                        command.Parameters.AddWithValue("@mail", model.Mail);
+                        command.Parameters.AddWithValue("@password", hashedPassword);
+                        if (reader.HasRows)
                         {
-                            command.Parameters.AddWithValue("@mail", model.Mail);
-                            command.Parameters.AddWithValue("@password", hashedPassword);
-                            if (reader.HasRows)
+                            reader.Read();
+                            var user = new UserModel
                             {
-                                reader.Read();
-                                var user = new UserModel
-                                {
-                                    Id = reader["Id"].ToString(),
-                                    FirstName = reader["FirstName"].ToString(),
-                                    LastName = reader["LastName"].ToString(),
-                                    PhoneNumber = reader["Phone"].ToString(),
-                                    Mail = reader["Mail"].ToString(),
-                                    Password = reader["Password"].ToString(),
-                                    IsAdmin = reader["IsAdmin"].ToString()
-                                };
+                                Id = reader["Id"].ToString(),
+                                FirstName = reader["FirstName"].ToString(),
+                                LastName = reader["LastName"].ToString(),
+                                PhoneNumber = reader["Phone"].ToString(),
+                                Mail = reader["Mail"].ToString(),
+                                Password = reader["Password"].ToString(),
+                                IsAdmin = reader["IsAdmin"].ToString()
+                            };
 
-                                HttpContext.Session.SetString("UserId", user.Id);
-                                HttpContext.Session.SetString("FirstName", user.FirstName);
-                                HttpContext.Session.SetString("LastName", user.LastName);
-                                HttpContext.Session.SetString("PhoneNumber", user.PhoneNumber);
-                                HttpContext.Session.SetString("Mail", user.Mail);
-                                HttpContext.Session.SetString("Password", user.Password);
-                                HttpContext.Session.SetString("IsAdmin", user.IsAdmin);
+                            HttpContext.Session.SetString("UserId", user.Id);
+                            HttpContext.Session.SetString("FirstName", user.FirstName);
+                            HttpContext.Session.SetString("LastName", user.LastName);
+                            HttpContext.Session.SetString("PhoneNumber", user.PhoneNumber);
+                            HttpContext.Session.SetString("Mail", user.Mail);
+                            HttpContext.Session.SetString("Password", user.Password);
+                            HttpContext.Session.SetString("IsAdmin", user.IsAdmin);
 
-                                if (user.IsAdmin == "yes")
-                                {
-                                    return RedirectToAction("Index", "Home");
-                                }
-                                return RedirectToAction("UserConnection", user);
-                            }
-                            else
+                            if (user.IsAdmin == "yes")
                             {
-                                ViewBag.ErrorMessage = "Invalid Email or Password!";
-                                return View(model);
+                                return RedirectToAction("Index", "Home");
                             }
+                            return RedirectToAction("UserConnection", user);
+                        }
+                        else
+                        {
+                            ViewBag.ErrorMessage = "Invalid Email or Password!";
+                            return View(model);
                         }
                     }
                 }
-            
+            }
         }
+       
         /*------------------------------------------this is for sql injection-------------------------->*/
 
         public IActionResult SearchUsers(string searchUsers)
